@@ -75,6 +75,21 @@ def playerStandings():
         matches: the number of matches the player has played
     """
 
+    query = """create view wins as select id, count(winner) as count
+        from players left join results on id = winner
+        group by id;
+    create view matches as select id, count(winner) as count
+        from players left join results on (id = player1 or id = player2)
+        group by id;
+    select players.id, players.name, wins.count, matches.count
+        from players, wins, matches
+        where players.id = wins.id and players.id = matches.id;
+    """
+    def fetch(cursor):
+        cursor.execute(query)
+        return cursor.fetchall()
+    return queryDb(fetch)
+
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
