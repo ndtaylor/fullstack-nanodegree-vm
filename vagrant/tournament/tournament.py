@@ -98,6 +98,9 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    player1 = winner if winner < loser else loser
+    player2 = winner if winner > loser else loser
+    doOnDb(lambda cur: cur.execute("insert into results values ({}, {}, {});".format(player1, player2, winner)))
 
 
 def swissPairings():
