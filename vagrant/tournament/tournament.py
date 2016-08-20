@@ -118,3 +118,14 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+
+    query = '''select id, name, count(winner) as wins
+        from players left join results on id = winner
+        group by id
+        order by wins;'''
+    def fetch(cur):
+        cur.execute(query)
+        return cur.fetchall()
+
+    players = queryDb(fetch)
+    return [((players[i][0], players[i][1], players[i+1][0], players[i+1][1])) for i in range(0, len(players), 2)]
