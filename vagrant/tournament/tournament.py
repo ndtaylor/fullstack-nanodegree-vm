@@ -83,7 +83,8 @@ def playerStandings():
         group by id;
     select players.id, players.name, wins.count, matches.count
         from players, wins, matches
-        where players.id = wins.id and players.id = matches.id;
+        where players.id = wins.id and players.id = matches.id
+        order by wins.count;
     """
     def fetch(cursor):
         cursor.execute(query)
@@ -119,13 +120,5 @@ def swissPairings():
         name2: the second player's name
     """
 
-    query = '''select id, name, count(winner) as wins
-        from players left join results on id = winner
-        group by id
-        order by wins;'''
-    def fetch(cur):
-        cur.execute(query)
-        return cur.fetchall()
-
-    players = queryDb(fetch)
-    return [((players[i][0], players[i][1], players[i+1][0], players[i+1][1])) for i in range(0, len(players), 2)]
+    standings = playerStandings()
+    return [((standings[i][0], standings[i][1], standings[i+1][0], standings[i+1][1])) for i in range(0, len(standings), 2)]
